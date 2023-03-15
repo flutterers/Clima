@@ -1,12 +1,17 @@
 import 'package:clima/components/reusable_card.dart';
 import 'package:clima/components/weather_card.dart';
+import 'package:clima/services/location.dart';
 import 'package:clima/services/weather_data.dart';
 import 'package:clima/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../services/weather_helper.dart';
 
 class LocationScreen extends StatefulWidget {
   final WeatherData weatherData;
+
   const LocationScreen({Key? key, required this.weatherData}) : super(key: key);
 
   @override
@@ -14,28 +19,65 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  late WeatherData weatherData;
+  late String msg;
+  late String cityName;
+  late String temp;
+  late String conditionIcon;
+  late String conditionDescription;
+  late String condition;
+  late DateTime nw;
+  late String date; // prints Tuesday, 10 Dec, 2019
+  late String time; // prints 10:02 AM
+
   @override
   void initState() {
     super.initState();
+    weatherData = widget.weatherData;
+    msg = weatherData.getTemperatureMessage().toString();
+    cityName = weatherData.getCityName();
+    temp = weatherData.getTemperature().toString();
+    conditionIcon = weatherData.getConditionIcon();
+    conditionDescription = weatherData.getConditionDescription();
+    condition = "$conditionIcon $conditionDescription";
+
+    nw = DateTime.now();
+    date =
+        (DateFormat('EEEE, d MMM').format(nw)); // prints Tuesday, 10 Dec, 2019
+    time = (DateFormat('h:mm a').format(nw));
+  }
+
+  void updateUI(WeatherData weatherData) {
+    setState(() {
+      msg = weatherData.getTemperatureMessage().toString();
+      cityName = weatherData.getCityName();
+      temp = weatherData.getTemperature().toString();
+      conditionIcon = weatherData.getConditionIcon();
+      conditionDescription = weatherData.getConditionDescription();
+      condition = "$conditionIcon $conditionDescription";
+
+      nw = DateTime.now();
+      date = (DateFormat('EEEE, d MMM')
+          .format(nw)); // prints Tuesday, 10 Dec, 2019
+      time = (DateFormat('h:mm a').format(nw)); // prints 10:02 AM
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String msg = widget.weatherData.getTemperatureMessage().toString();
-    String cityName = widget.weatherData.getCityName();
-    String temp = widget.weatherData.getTemperature().toString();
-    String conditionIcon = widget.weatherData.getConditionIcon();
-    String conditionDescription = widget.weatherData.getConditionDescription();
-    String condition = "$conditionIcon $conditionDescription";
-
-    DateTime nw = DateTime.now();
-    String date =
-        (DateFormat('EEEE, d MMM').format(nw)); // prints Tuesday, 10 Dec, 2019
-    String time = (DateFormat('h:mm a').format(nw)); // prints 10:02 AM
-
     // Color bgColor = widget.weatherData.getBackgroundColor();
-
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kMainBackgroundColor,
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.locationArrow),
+          onPressed: () async {
+            weatherData = await WeatherHelper().getLocationWeatherData();
+            updateUI(weatherData);
+          },
+        ),
+        elevation: 0,
+      ),
       backgroundColor: kMainBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -63,7 +105,7 @@ class _LocationScreenState extends State<LocationScreen> {
             ),
             Expanded(
               child: Image.asset(
-                widget.weatherData.getConditionAssetImage(),
+                weatherData.getConditionAssetImage(),
               ),
             ),
             Text(
