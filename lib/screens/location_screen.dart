@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clima/components/reusable_card.dart';
 import 'package:clima/components/weather_card.dart';
 import 'package:clima/services/location.dart';
@@ -45,6 +47,16 @@ class _LocationScreenState extends State<LocationScreen> {
     date =
         (DateFormat('EEEE, d MMM').format(nw)); // prints Tuesday, 10 Dec, 2019
     time = (DateFormat('h:mm a').format(nw));
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+  }
+
+  void _getTime() {
+    setState(() {
+      nw = DateTime.now();
+      date = (DateFormat('EEEE, d MMM')
+          .format(nw)); // prints Tuesday, 10 Dec, 2019
+      time = (DateFormat('h:mm a').format(nw));
+    });
   }
 
   void updateUI(WeatherData weatherData) {
@@ -65,6 +77,9 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      nw = DateTime.now();
+    });
     // Color bgColor = widget.weatherData.getBackgroundColor();
     return Scaffold(
       appBar: AppBar(
