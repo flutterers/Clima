@@ -11,6 +11,7 @@ class NetworkHelper {
       'lat': lat,
       'lon': lon,
       'appid': kAppId,
+      'units': 'metric',
     };
 
     /// from documentation --> Request url Should look like this:

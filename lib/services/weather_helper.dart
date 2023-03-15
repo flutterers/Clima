@@ -1,3 +1,4 @@
+import 'package:clima/services/weather_data.dart';
 import 'location.dart';
 import 'networking.dart';
 
@@ -12,6 +13,6 @@ class WeatherHelper {
     lon = location.long.toStringAsFixed(2);
     lat = location.lat.toStringAsFixed(2);
     weatherData = await NetworkHelper().getWeatherDataFromLocation(lon, lat);
-    return weatherData;
+    return WeatherData(weatherDataDecoded: weatherData);
   }
 }
