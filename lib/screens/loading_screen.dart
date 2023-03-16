@@ -1,4 +1,5 @@
 import 'package:clima/screens/location_screen.dart';
+import 'package:clima/services/weather_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -13,8 +14,8 @@ class LoadingScreen extends StatefulWidget {
 }
 
 void getLocationWeatherData(context) async {
-  dynamic weatherData = await WeatherHelper().getLocationWeatherData();
-  Navigator.push(
+  var weatherData = await WeatherHelper().getLocationWeatherData();
+  Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => LocationScreen(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 ///API data: OpenWeatherMap
 const kAppId = "1bcbe727a72a05fbb4f5676f85cd5611";
@@ -26,6 +27,26 @@ const boxDecorationSunny = BoxDecoration(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   ),
+);
+
+const outlineBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+  borderSide: BorderSide.none,
+);
+
+const InputDecoration kTextFieldInputDecoration = InputDecoration(
+  border: outlineBorder,
+  // enabledBorder: outlineBorder,
+  // disabledBorder: outlineBorder,
+  // focusedBorder: outlineBorder,
+  // hoverColor: Colors.white70,
+  // focusColor: Colors.white70,
+  hintText: 'Search for a City..',
+  hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
+  icon: FaIcon(FontAwesomeIcons.city),
+  iconColor: Colors.white,
+  fillColor: Colors.black26,
+  filled: true,
 );
 
 ///Styles

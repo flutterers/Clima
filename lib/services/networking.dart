@@ -4,23 +4,8 @@ import 'dart:convert';
 import '../utilities/constants.dart';
 
 class NetworkHelper {
-  Future getWeatherDataFromLocation(String lon, String lat) async {
+  Future getHttpResponse(url) async {
     dynamic decodedData;
-
-    final queryParameters = {
-      'lat': lat,
-      'lon': lon,
-      'appid': kAppId,
-      'units': 'metric',
-    };
-
-    /// from documentation --> Request url Should look like this:
-    /// https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-    var url = Uri.https(
-      'api.openweathermap.org',
-      '/data/2.5/weather',
-      queryParameters,
-    );
 
     http.Response response = await http.get(url);
 

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:clima/components/reusable_card.dart';
 import 'package:clima/components/weather_card.dart';
-import 'package:clima/services/location.dart';
+import 'package:clima/screens/city_screen.dart';
 import 'package:clima/services/weather_data.dart';
 import 'package:clima/utilities/constants.dart';
 import 'package:flutter/material.dart';
@@ -21,25 +21,28 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  late WeatherData weatherData;
+  // late WeatherData weatherData;
   late String msg;
   late String cityName;
   late String temp;
   late String conditionIcon;
   late String conditionDescription;
+  late String conditionAssetImage;
   late String condition;
   late DateTime nw;
   late String date; // prints Tuesday, 10 Dec, 2019
   late String time; // prints 10:02 AM
+  late Timer timer;
 
   @override
   void initState() {
     super.initState();
-    weatherData = widget.weatherData;
+    var weatherData = widget.weatherData;
     msg = weatherData.getTemperatureMessage().toString();
     cityName = weatherData.getCityName();
     temp = weatherData.getTemperature().toString();
     conditionIcon = weatherData.getConditionIcon();
+    conditionAssetImage = weatherData.getConditionAssetImage();
     conditionDescription = weatherData.getConditionDescription();
     condition = "$conditionIcon $conditionDescription";
 
@@ -47,7 +50,7 @@ class _LocationScreenState extends State<LocationScreen> {
     date =
         (DateFormat('EEEE, d MMM').format(nw)); // prints Tuesday, 10 Dec, 2019
     time = (DateFormat('h:mm a').format(nw));
-    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
   }
 
   void _getTime() {
@@ -59,13 +62,14 @@ class _LocationScreenState extends State<LocationScreen> {
     });
   }
 
-  void updateUI(WeatherData weatherData) {
+  void updateUI(WeatherData weatherDataNew) {
     setState(() {
-      msg = weatherData.getTemperatureMessage().toString();
-      cityName = weatherData.getCityName();
-      temp = weatherData.getTemperature().toString();
-      conditionIcon = weatherData.getConditionIcon();
-      conditionDescription = weatherData.getConditionDescription();
+      msg = weatherDataNew.getTemperatureMessage().toString();
+      cityName = weatherDataNew.getCityName();
+      temp = weatherDataNew.getTemperature().toString();
+      conditionIcon = weatherDataNew.getConditionIcon();
+      conditionAssetImage = weatherDataNew.getConditionAssetImage();
+      conditionDescription = weatherDataNew.getConditionDescription();
       condition = "$conditionIcon $conditionDescription";
 
       nw = DateTime.now();
@@ -87,11 +91,29 @@ class _LocationScreenState extends State<LocationScreen> {
         leading: IconButton(
           icon: const FaIcon(FontAwesomeIcons.locationArrow),
           onPressed: () async {
-            weatherData = await WeatherHelper().getLocationWeatherData();
+            var weatherData = await WeatherHelper().getLocationWeatherData();
             updateUI(weatherData);
           },
         ),
-        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              var TypedCity = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CityScreen(),
+                ),
+              );
+              print("Typed City: $TypedCity");
+              if (TypedCity != "") {
+                dynamic newWeatherData =
+                    await WeatherHelper().getCityWeatherData(TypedCity);
+                updateUI(newWeatherData);
+              }
+            },
+            icon: FaIcon(FontAwesomeIcons.city),
+          ),
+        ],
       ),
       backgroundColor: kMainBackgroundColor,
       body: Padding(
@@ -119,9 +141,7 @@ class _LocationScreenState extends State<LocationScreen> {
               ),
             ),
             Expanded(
-              child: Image.asset(
-                weatherData.getConditionAssetImage(),
-              ),
+              child: Image.asset(conditionAssetImage),
             ),
             Text(
               "$temp°",
@@ -189,5 +209,11 @@ class _LocationScreenState extends State<LocationScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void deactivate() {
+    timer.cancel();
+    super.deactivate();
   }
 }

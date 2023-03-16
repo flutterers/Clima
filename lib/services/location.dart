@@ -35,8 +35,9 @@ class Location {
 
       // When we reach here, permissions are granted and we can
       // continue accessing the position of the device.
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low);
+      var position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          forceAndroidLocationManager: false);
       long = position.longitude;
       lat = position.latitude;
       if (kDebugMode) {
